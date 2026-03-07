@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            background-color: #000; 
+        }
+        #map { 
+            width: 100vw; 
+            height: 100vh; 
+        }
+        .leaflet-popup-content-wrapper { 
+            font-size: 1.2em; 
+            border-radius: 8px; 
+        }
+        .leaflet-popup-content { 
+            margin: 15px; 
+            line-height: 1.5; 
+            width: 250px !important; /* Fuerza un ancho base para el popup */
+        }
+        .titulo-punto { 
+            font-weight: bold; 
+            font-size: 1.3em; 
+            color: #2c3e50; 
+            margin-bottom: 5px; 
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map', {
+            center: [4.7414, -74.0840],
+            zoom: 13,
+            zoomControl: false 
+        });
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        var iconoBiblioteca = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        var iconoPPP = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        var iconoPortal = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        var puntosDeLectura = [
+            {
+                "nombre": "P.P.P. Mirador de los Nevados",
+                "lat": 4.741708376566767,
+                "lng": -74.08029819136,
+                "descripcion": "Lugar ideal para sentirse fuera de la ciudad.",
+                "horario": "Viernes a Domingo: 8:00 a.m. - 1:00 p.m.",
+                "imagen": "https://i.postimg.cc/brsjt0rv/Mirador.jpg",
+                "tipo": "ppp"
+            },
+            {
+                "nombre": "P.P.P. La Gaitana",
+                "lat": 4.739694919804375,
+                "lng": -74.10910419599612,
+                "descripcion": "Espacio ideal para acercarnos a los libros.",
+                "horario": "Viernes a Domingo: 8:00 a.m. - 1:00 p.m.",
+                "imagen": "https://i.postimg.cc/nrCtDKrh/Gaitana.jpg",
+                "tipo": "ppp"
+            },
+            {
+                "nombre": "B.P. Francisco José de Caldas",
+                "lat": 4.74125796114171,
+                "lng": -74.08483384762012,
+                "descripcion": "Espacio agradable para toda la familia, leer, jugar y aprender.",
+                "horario": "Martes a Domingo: 8:00 a.m. - 7:00 p.m.",
+                "imagen": "https://i.postimg.cc/k5nzSNh5/BP_Suba_Francisco_Jose_de_Caldas_06_de_noviembre_de_2024_32_(1).jpg",
+                "tipo": "biblioteca"
+            },
+            {
+                "nombre": "P.P.P. Tibabuyes",
+                "lat": 4.74627475614681,
+                "lng": -74.11010136525347,
+                "descripcion": "Los libros aquí están cerca de la comunidad.",
+                "horario": "Viernes a Domingo: 8:00 a.m. - 1:00 p.m.",
+                "imagen": "https://i.postimg.cc/8cjV6dcP/Tibabuyes.jpg",
+                "tipo": "ppp"
+            },
+            {
+                "nombre": "P.P.P. Casa Blanca",
+                "lat": 4.736522123163633,
+                "lng": -74.0764515078938,
+                "descripcion": "Espacio abierto para el disfrute de la comunidad.",
+                "horario": "Viernes a Domingo: 8:00 a.m. - 1:00 p.m.",
+                "imagen": "https://i.postimg.cc/T1pXDj1d/Casa_Blanca.jpg",
+                "tipo": "ppp"
+            },
+            {
+                "nombre": "Portal Suba",
+                "lat": 4.74663642326546, 
+                "lng": -74.09421781907166, 
+                "descripcion": "Estación de cabecera del sistema Transmilenio en Suba.",
+                "horario": "Lunes a Sábado: 4:30 a.m. - 11:00 p.m.",
+                "imagen": "https://i.postimg.cc/50vf7S1R/Portal_suba.jpg",
+                "tipo": "portal"
+            },
+            {
+                "nombre": "B.P. Julio Mario Santo Domingo",
+                "lat": 4.756749528102688,
+                "lng": -74.06279498075693,
+                "descripcion": "Libros, actividades y mucho más.",
+                "horario": "Martes a Domingo: 8:00 a.m. - 7:00 p.m.",
+                "imagen": "https://i.postimg.cc/252J7qPN/JMSD.png",
+                "tipo": "biblioteca"
+            },
+            {
+                "nombre": "B.P. CEFE Cometas",
+                "lat": 4.714214161374839,
+                "lng": -74.0866263776449,
+                "descripcion": "Biblioteca en el Centro Felicidad Cometas.",
+                "horario": "Martes a Domingo: 10:00 a.m. - 7:00 p.m.",
+                "imagen": "https://i.postimg.cc/tgXw6dmC/BP_cometas.jpg",
+                "tipo": "biblioteca"
+            },
+            {
+                "nombre": "B.P. CEFE Fontanar",
+                "lat": 4.75509409498958,
+                "lng": -74.11322439451425,
+                "descripcion": "Biblioteca en el Centro Felicidad Fontanar del Río.",
+                "horario": "Martes a Domingo: 10:00 a.m. - 7:00 p.m.",
+                "imagen": "https://i.postimg.cc/W4XKwDQV/CEFE_Fontanar_del_Río_1.png",
+                "tipo": "biblioteca"
+            },
+            {
+                "nombre": "P.P.P. Parque Fontanar",
+                "lat": 4.756461442330971,
+                "lng": -74.11064139105443,
+                "descripcion": "Punto de lectura en el parque.",
+                "horario": "Viernes a Domingo: 8:00 a.m. - 1:00 p.m.",
+                "imagen": "https://i.postimg.cc/90rj7P04/Fontanar.jpg",
+                "tipo": "ppp"
+            }
+        ];
+
+        puntosDeLectura.forEach(function(punto) {
+            var iconoSeleccionado;
+            if (punto.tipo === "biblioteca") {
+                iconoSeleccionado = iconoBiblioteca;
+            } else if (punto.tipo === "portal") {
+                iconoSeleccionado = iconoPortal;
+            } else {
+                iconoSeleccionado = iconoPPP;
+            }
+
+            var marcador = L.marker([punto.lat, punto.lng], { icon: iconoSeleccionado }).addTo(map);
+            
+            var contenidoPopup = `
+                <div class="titulo-punto">${punto.nombre}</div>
+                <img src="${punto.imagen}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; display: block;">
+                <div style="font-size: 0.9em; margin-bottom: 5px;"><b>Horario:</b> ${punto.horario}</div>
+                <div>${punto.descripcion}</div>
+            `;
+            
+            marcador.bindPopup(contenidoPopup);
+        });
+    </script>
+</body>
+</html>
